@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post Detail</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="posts" class="container" style="max-width:720px;margin-top:20px;">
+  <a href="index.html">← Back</a>
+  <div id="post-card" class="card">Loading...</div>
+
+  <div class="card">
+    <h4>Add comment</h4>
+    <textarea id="comment-body" class="input" rows="3" placeholder="Write a comment..."></textarea>
+    <div style="text-align:right;margin-top:8px;">
+      <button class="btn" id="btn-add-comment">Add</button>
+    </div>
+  </div>
+
+  <div id="comments-list"></div>
+</div>
+<script>
+const API = "https://tarmeezacademy.com/api/v1";
+const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+const params = new URLSearchParams(window.location.search);
+const postId = params.get("id");
+
+async function loadPost(){
+  try {
+    const res = await fetch(`${API}/posts/${postId}`);
+    const p = await res.json();
+    const post = p.data;
+
+    const card = document.getElementById("post-card");
+    card.innerHTML = `
+      <div class="row">
+        <div class="avatar"></div>
+        <div>
+          <div><strong>${post.author ? post.author.name : "Unknown"}</strong></div>
+        <div class="muted">
+  ${isNaN(Date.parse(p.created_at)) ? "" : new Date(p.created_at).toLocaleString()}
+</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">${post.body || ""}</div>
+
+      ${post.image ? `<img src="${post.image}" class="media" alt="post image" />` : ""}
+    `;
+
+    loadComments();
+
+  } catch(e){
+    console.error(e);
+    document.getElementById("post-card").innerText = "Failed to load post";
+  }
+}
+
+async function loadComments(){
+  try {
+    const res = await fetch(`${API}/posts/${postId}`);
+    const p = await res.json();
+    const post = p.data;
+    const comments = post.comments || [];
+
+    const el = document.getElementById("comments-list");
+    el.innerHTML = "";
+
+    comments.forEach(c => {
+      const d = document.createElement("div");
+      d.className = "card";
+      d.innerHTML = `
+        <strong>${c.author ? c.author.name : "Anon"}</strong>
+      <div class="muted">
+  ${isNaN(Date.parse(p.created_at)) ? "" : new Date(p.created_at).toLocaleString()}
+</div>
+        <div style="margin-top:8px">${c.body}</div>
+      `;
+      el.appendChild(d);
+    });
+
+  } catch(e){
+    console.error(e);
+  }
+}
+
+document.getElementById("btn-add-comment").addEventListener("click", async ()=>{
+  const body = document.getElementById("comment-body").value.trim();
+  if(!body) return alert("Write a comment.");
+
+  if(!user.token) return alert("You must login first!");
+
+  try {
+    const res = await fetch(`${API}/posts/${postId}/comments`, {
+      method:"POST",
+      headers: {
+        "Content-Type":"application/json",
+        "Authorization": `Bearer ${user.token}`
+      },
+      body: JSON.stringify({ body })
+    });
+
+    if(res.ok){
+      document.getElementById("comment-body").value = "";
+      loadComments();
+    } else {
+      alert("Failed to add comment");
+    }
+
+  } catch(e){
+    console.error(e);
+    alert("Failed to add comment");
+  }
+});
+
+loadPost();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Post</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container" >
+    <a href="index.html">← Back</a>
+    <div id="post-card" class="card">Loading...</div>
+    <div class="card">
+      <h4>Add comment</h4>
+      <textarea id="comment-body" class="input" rows="3"></textarea>
+      <div ><button class="btn" id="btn-add-comment">Add</button></div>
+    </div>
+    <div id="comments-list"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const postId = params.get('id');
+
+    async function loadPost(){
+      try{
+        const p = await api.getPost(postId);
+        const card = document.getElementById('post-card');
+        card.innerHTML = `
+          <div class="row">
+            <div class="avatar"></div>
+            <div>
+              <div><strong>${p.author ? p.author.name : 'Unknown'}</strong></div>
+              <div class="muted">${new Date(p.createdAt||Date.now()).toLocaleString()}</div>
+            </div>
+          </div>
+          <div style="margin-top:10px">${p.body || ''}</div>
+          ${p.image ? `<img src="${p.image}" class="media">` : ''}
+        `;
+      }catch(e){ console.error(e); document.getElementById('post-card').innerText='Failed'; }
+    }
+
+    async function loadComments(){
+      try{
+        const p = await api.getPost(postId);
+        const comments = p.comments || [];
+        const el = document.getElementById('comments-list');
+        el.innerHTML = '';
+        comments.forEach(c=>{
+          const d = document.createElement('div'); d.className='card';
+          d.innerHTML = `<div><strong>${c.author ? c.author.name : 'Anon'}</strong> <div class="muted">${new Date(c.createdAt||Date.now()).toLocaleString()}</div></div><div style="margin-top:8px">${c.body}</div>`;
+          el.appendChild(d);
+        });
+      }catch(e){ console.error(e); }
+    }
+
+    document.getElementById('btn-add-comment').addEventListener('click', async ()=>{
+      const body = document.getElementById('comment-body').value.trim();
+      if(!body) return alert('Write a comment');
+      try{ await api.addComment(postId, { body }); document.getElementById('comment-body').value=''; await loadComments(); }catch(e){ console.error(e); alert('Failed to add comment'); }
+    });
+
+    loadPost(); loadComments();
+  </script>
+</body>
+</html>-->

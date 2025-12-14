@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Post</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container" style="max-width:720px;margin-top:40px;">
+  <div class="card">
+    <h3>Create Post</h3>
+    <textarea id="body" class="input" rows="4" placeholder="Write..."></textarea>
+    <input type="file" id="image" accept="image/*">
+    <div style="text-align:right;margin-top:8px;">
+      <button class="btn" id="btn-create-post">Publish</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "https://tarmeezacademy.com/api/v1";
+
+document.getElementById("btn-create-post").addEventListener("click", async ()=>{
+  const body = document.getElementById("body").value.trim();
+  const imageFile = document.getElementById("image").files[0] || null;
+
+  if(!body && !imageFile){
+    alert("Post is empty.");
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if(!token){
+    alert("You must login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+    if(body) formData.append("body", body);
+    if(imageFile) formData.append("image", imageFile);
+
+    const res = await fetch(`${API}/posts`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      }
+    });
+
+    if(res.ok){
+      alert("Post created!");
+      window.location.href = "index.html";
+    } else {
+      const data = await res.json();
+      alert(data.message || "Failed to create post");
+    }
+
+  } catch(err){
+    console.error(err);
+    alert("Failed to create post");
+  }
+});
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Create Post</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h3>Create Post</h3>
+      <div class="form-row">
+        <textarea id="body" class="input" rows="4" placeholder="Write..."></textarea>
+        <input type="file" id="image" accept="image/*">
+        <div ><button class="btn" id="btn-create-post">Publish</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('btn-create-post').addEventListener('click', async ()=>{
+      const body = document.getElementById('body').value.trim();
+      const image = document.getElementById('image').files[0] || null;
+      try{ await api.createPost({ body, imageFile: image }); alert('Post created'); window.location.href='index.html'; }catch(e){ console.error(e); alert('Failed to create post'); }
+    });
+  </script>
+</body>
+</html>-->

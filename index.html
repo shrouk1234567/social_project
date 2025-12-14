@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feed</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style_sign_up.css">
+</head>
+<body>
+  
+  
+<div class="container">
+  <header class="header">
+    <div class="brand">
+      <div class="logo"> <img src="images/Container.png" width="40px"/></div>
+      <h2 style="color: rgb(248, 235, 249);">SocialVibe</h2>
+    </div>
+    <div>
+      <button class="btn" id="btn-create">New</button>
+      <button class="btn" id="btn-logout">Logout</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    
+    <!---->
+    <main class="main">
+      <div class="card">
+        <textarea id="post-body" class="input" rows="3" placeholder="Write a post..."></textarea>
+        <input type="file" id="post-image" accept="image/*" style="background-color: rgb(255, 213, 245); border-radius: 10px;">
+        <div style="text-align:right;margin-top:8px;">
+          <button class="btn" id="btn-post">Post</button>
+        </div>
+      </div>
+      <div id="posts-list"></div>
+    </main>
+
+    <aside class="sidebar">
+      <div class="card">
+        <h4>Profile</h4>
+        <div class="row">
+          <div class="avatar"></div>
+          <div>
+            <div id="profile-name">Guest</div>
+            <div class="muted" id="profile-username">@guest</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;"><a href="profile.html">View profile</a></div>
+      </div>
+
+     
+    </aside>
+  </div>
+</div>
+
+
+<script>
+const API = "https://tarmeezacademy.com/api/v1";
+const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+document.getElementById("profile-name").innerText = user.name || "Guest";
+document.getElementById("profile-username").innerText = user.username ? "@"+user.username : "@guest";
+
+async function loadPosts(){
+  try {
+    const res = await fetch("https://tarmeezacademy.com/api/v1/posts?limit=10");
+    const postsData = await res.json();
+const posts = postsData.data;
+    const container = document.getElementById("posts-list");
+    container.innerHTML = "";
+    posts.forEach(p=>{
+  const div = document.createElement("div");
+  div.className = "card post";
+  div.innerHTML = `
+    <div class="row post-header">
+      <div class="avatar"></div>
+      <div>
+        <div><strong>${p.author ? p.author.name : "Unknown"}</strong></div>
+ <div class="muted">
+  ${isNaN(Date.parse(p.created_at)) ? "" : new Date(p.created_at).toLocaleString()}
+</div>
+
+      </div>
+    </div>
+
+    <div class="post-body" style="margin-top:10px;">
+      <div>${p.body || ""}</div>
+      ${p.image ? `<img class="media" src="${p.image}" alt="image" />` : ""}
+      <div style="margin-top:8px;">
+        <a href="post.html?id=${p.id}">View</a>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+});
+
+  } catch(e){ console.error(e); }
+}
+
+
+
+// Post creation
+
+document.getElementById("btn-post").addEventListener("click", async ()=>{
+  const body = document.getElementById("post-body").value.trim();
+  const imageFile = document.getElementById("post-image").files[0] || null;
+  if(!body && !imageFile) return alert("Post is empty.");
+
+  try {
+    const formData = new FormData();
+    if(body) formData.append("body", body);
+    if(imageFile) formData.append("image", imageFile);
+
+    const res = await fetch("https://tarmeezacademy.com/api/v1/posts", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${user.token}` // أهم تعديل
+      },
+      body: formData
+    });
+
+    const data = await res.json();
+    if(res.ok){
+      alert("Post created!");
+      document.getElementById("post-body").value = "";
+      document.getElementById("post-image").value = "";
+      loadPosts();
+    } else {
+      console.error(data);
+      alert("Failed to create post: " + (data.message || "Unknown error"));
+    }
+  } catch(e){
+    console.error(e);
+    alert("Failed to create post error");
+  }
+});
+
+
+// Navigation buttons
+document.getElementById("btn-create").addEventListener("click", ()=> window.location.href="create-post.html");
+document.getElementById("btn-logout").addEventListener("click", async ()=>{
+  try{
+    await fetch(`${API}/logout`, {
+      method:"POST",
+      headers:{ "Accept":"application/json", "Content-Type":"application/json" },
+      body: JSON.stringify({ username: user.username, password: user.password })
+    });
+  } catch(e){ console.error(e); }
+  localStorage.removeItem("user");
+  window.location.href="login.html";
+});
+
+
+// Initialize
+loadPosts();
+console.log(user.token);
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Feed</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand"><div class="logo"></div><h1>Tarmeez Feed</h1></div>
+      <div>
+        <button class="btn" id="btn-create">New</button>
+        <button class="btn" id="btn-logout">Logout</button>
+      </div>
+    </header>
+
+    <div class="layout" >
+      <main class="main">
+        <div class="card">
+          <div class="form-row">
+            <textarea id="post-body" rows="3" class="input" placeholder="Write a post..."></textarea>
+            <input type="file" id="post-image" accept="image/*">
+            <div >
+              <button class="btn" id="btn-post">Post</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="posts-list"></div>
+      </main>
+
+      <aside class="sidebar" >
+        <div class="card">
+          <h4>Profile</h4>
+          <div class="row">
+            <div class="avatar"></div>
+            <div>
+              <div id="profile-name">Guest</div>
+              <div class="muted" id="profile-username">@guest</div>
+            </div>
+          </div>
+          <div style="margin-top:10px"><a href="profile.html">View profile</a></div>
+        </div>
+
+        <div class="card">
+          <h4>Tags</h4>
+          <div id="tags-list">Loading...</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    async function renderPosts(){
+      try{
+        const posts = await api.getPosts(50);
+        const container = document.getElementById('posts-list');
+        container.innerHTML = '';
+        if (!Array.isArray(posts)) return container.innerText = 'No posts.';
+        posts.forEach(p => {
+          const div = document.createElement('div');
+          div.className = 'card post';
+          div.innerHTML = `
+            <div class="row post-header">
+              <div class="avatar"></div>
+              <div>
+                <div><strong>${p.author ? p.author.name : 'Unknown'}</strong></div>
+                <div class="muted">${new Date(p.createdAt || Date.now()).toLocaleString()}</div>
+              </div>
+            </div>
+            <div class="post-body">
+              <div>${p.body || ''}</div>
+              ${p.image ? `<img class="media" src="${p.image}" alt="image">` : ''}
+              <div style="margin-top:8px"><a href="post.html?id=${p.id}">View</a></div>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }catch(e){ console.error(e); alert('Failed to load posts'); }
+    }
+
+    async function renderTags(){
+      try{ const tags = await api.getTags(); document.getElementById('tags-list').innerText = (Array.isArray(tags) ? tags.map(t=>`#${t.name}`).join(' ') : 'No tags'); }catch(e){ document.getElementById('tags-list').innerText='Failed'; }
+    }
+
+    document.getElementById('btn-post').addEventListener('click', async ()=>{
+      const body = document.getElementById('post-body').value.trim();
+      const image = document.getElementById('post-image').files[0] || null;
+      try{ await api.createPost({ body, imageFile: image }); document.getElementById('post-body').value = ''; document.getElementById('post-image').value = ''; await renderPosts(); }catch(e){ console.error(e); alert('Create post failed'); }
+    });
+
+    document.getElementById('btn-create').addEventListener('click', ()=>{ window.location.href='create-post.html'; });
+    document.getElementById('btn-logout').addEventListener('click', ()=>{ api.logout(); });
+
+    // init
+    renderPosts(); renderTags();
+  </script>
+</body>
+</html>-->

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+   
+<div class="container" style="margin: 30px; display: flex;gap: 50px;">
+   <div class="sig-in">
+      <div>
+        <div style="display: flex; align-content: center;align-items: center; gap: 5px;">
+          <img width="30px" src="images/Container.png"/>
+          <h2 style="color: rgb(255, 220, 248);">SocialVibe</h2>
+        </div>
+        <h1>Connect with the world</h1>
+        <p>Share your moments and stories with friends and family</p>
+      </div>
+   </div>
+  <div class="card">
+    <h2>Welcome back!</h2>
+    <h2>Login</h2>
+    <input id="username" class="input" placeholder="Username">
+    <input id="password" type="password" class="input" placeholder="Password">
+    <div style="text-align:right;margin-top:8px;">
+      <button class="btn" id="btn-login" style="width: 100%;">Login</button>
+    </div>
+    <div style="margin-top:8px;display: flex;">
+      <p>Don't have an account?</p>
+      <a href="signup.html">Create account</a></div>
+  </div>
+</div>
+
+<script>
+const API = "https://tarmeezacademy.com/api/v1";
+
+document.getElementById("btn-login").addEventListener("click", async () => {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!username || !password) {
+    alert("Enter username and password.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/login`, {
+      method: "POST",
+      headers: { 
+        "Accept": "application/json",
+        "Content-Type": "application/json" 
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // تخزين user + token
+      const storedUser = {
+        ...data.user,
+        token: data.token
+      };
+
+      localStorage.setItem("user", JSON.stringify(storedUser));
+
+      alert("Logged in!");
+      window.location.href = "index.html";
+    } else {
+      alert(data.message || "Login failed");
+    }
+
+  } catch(e) {
+    console.error(e);
+    alert("Login failed");
+  }
+});
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container" >
+    <div class="card">
+      <h2>Login</h2>
+      <div class="form-row">
+        <input id="username" class="input" placeholder="Username">
+        <input id="password" class="input" placeholder="Password" type="password">
+        <div>
+          <button class="btn" id="btn-login">Login</button>
+        </div>
+        <div style="margin-top:8px"><a href="signup.html">Create account</a></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('btn-login').addEventListener('click', async ()=>{
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      if(!username||!password) return alert('Enter username & password');
+      try{
+        const data = await api.login({ username, password });
+        alert('Logged in');
+        window.location.href = 'index.html';
+      }catch(e){ console.error(e); alert('Login failed'); }
+    });
+  </script>
+</body>
+</html>-->

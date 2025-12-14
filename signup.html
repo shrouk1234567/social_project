@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style_sign_up.css">
+</head>
+<body>
+   <div style="display: flex; justify-content: space-between;align-items: center; margin: 10px;">
+    <div style="display: flex; align-content: center;align-items: center; gap: 5px;">
+       <img src="images/Container.png" width="30px"/>
+      <h2 style="color: rgb(248, 235, 249);">SocialVibe</h2>
+      </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="signup.html" class="signup-nav">Sign Up</a>
+    </nav>
+  </div>
+
+  <div class="sig-in">
+    <div>
+      <h1>Join our community</h1>
+      <p>Start your journey in sharing special moments</p>
+    </div>
+
+<div class="container" style="max-width:640px;margin-top:60px;">
+  <div class="card">
+    <h2>Create New Account</h2>
+    <p style="color: rgb(148, 3, 90);">Start your journey in sharing special moments</p>
+    <br>
+      <label>Username</label>
+      <br>
+    <input id="su-username" class="input" placeholder="Username">
+      <label>Full Name</label>
+    <input id="su-name" class="input" placeholder="Full name">
+     <label>Email</label>
+    <input id="su-email" class="input" placeholder="Email">
+     <label>Password</label>
+    <input id="su-password" type="password" class="input" placeholder="Password">
+    <div style="text-align:right;margin-top:8px;">
+      <button class="btn" id="btn-signup">Sign up</button>
+      
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <p>Already have an account?</p>
+          <a href="login.html" style="color: rgb(148, 1, 121);">Login</a>
+        </div>
+    </div>
+  </div>
+</div>
+  </div>
+
+<script>
+const API = "https://tarmeezacademy.com/api/v1";
+
+document.getElementById("btn-signup").addEventListener("click", async () => {
+  const username = document.getElementById("su-username").value.trim();
+  const name = document.getElementById("su-name").value.trim();
+  const password = document.getElementById("su-password").value.trim();
+
+  // Check empty fields
+  if (!username || !name || !password) {
+    return alert("Fill all fields.");
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("name", name);
+    formData.append("password", password);
+
+    const res = await fetch(`${API}/register`, {
+      method:"POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if(res.ok){
+      alert("Account created. Please login.");
+      window.location.href="login.html";
+    } else {
+      alert(data.message || "Signup failed");
+    }
+
+  } catch(e){
+    console.error(e);
+    alert("Signup failed");
+  }
+});
+</script>
+</body>
+</html>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sign up</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>Create new account</h2>
+      <div class="form-row">
+        <input id="su-username" class="input" placeholder="Username">
+        <input id="su-name" class="input" placeholder="Full name">
+        <input id="su-email" class="input" placeholder="Email">
+        <input id="su-password" class="input" placeholder="Password" type="password">
+        <div style="text-align:right;margin-top:8px"><button class="btn" id="btn-signup">Sign up</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('btn-signup').addEventListener('click', async ()=>{
+      const username = document.getElementById('su-username').value.trim();
+      const name = document.getElementById('su-name').value.trim();
+      const email = document.getElementById('su-email').value.trim();
+      const password = document.getElementById('su-password').value.trim();
+      if(!username||!name||!email||!password) return alert('Fill all fields');
+      try{ await api.register({ username, password, name, email }); alert('Account created, please login'); window.location.href='login.html'; }catch(e){ console.error(e); alert('Signup failed'); }
+    });
+  </script>
+</body>
+</html>-->

@@ -1,0 +1,172 @@
+/* Import clean UI font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #d633ff, #f902bb);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+a {
+  color: #6a11cb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ------------------------------ */
+/* Cards                         */
+/* ------------------------------ */
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgb(49, 0, 47);
+}
+#posts-list div:hover{
+ 
+  transform: translateY(-8px) scale(1.02);
+ 
+
+}
+h1, h2, h3, h4 {
+  margin-bottom: 10px;
+}
+
+/* ------------------------------ */
+/* Inputs & Buttons              */
+/* ------------------------------ */
+
+.input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f5f6fb;
+  border: 1px solid #e1e3ee;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+textarea.input {
+  resize: vertical;
+}
+
+.btn {
+  background: linear-gradient(90deg, #ff00cc, #3333ff);
+  border: none;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+#btn-signup{
+  width: 100%;
+}
+.btn:hover {
+  opacity: 0.8;
+}
+
+/* ------------------------------ */
+/* Layout (Feed + Sidebar)       */
+/* ------------------------------ */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+   justify-content:center;
+  gap: 10px;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #ff00cc, #3333ff);
+}
+
+.layout {
+  display: flex;
+  gap: 24px;
+}
+
+.sidebar .card {
+  position: sticky;
+  top: 20px;
+}
+
+/* ------------------------------ */
+/* Avatars & rows                */
+/* ------------------------------ */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #d1d3d8;
+}
+
+.muted {
+  color: #888;
+  font-size: 13px;
+}
+
+/* ------------------------------ */
+/* Posts                         */
+/* ------------------------------ */
+
+.post {
+  padding: 18px;
+}
+
+.post-header strong {
+  font-size: 15px;
+}
+
+.post-body img.media {
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+/* ------------------------------ */
+/* Comments                      */
+/* ------------------------------ */
+
+#comments-list .card {
+  padding: 15px;
+}
+
+#comments-list strong {
+  font-size: 14px;
+}

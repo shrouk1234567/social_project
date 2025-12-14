@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../social_media_project"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "social_project"
+	}
+}
