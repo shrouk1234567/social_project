@@ -12,8 +12,13 @@ body {
   background: linear-gradient(135deg, #d633ff, #f902bb);
   min-height: 100vh;
   padding-bottom: 40px;
+  
 }
-
+img, .media {
+  max-width: 100%;  /* لا تتعدى عرض الحاوية */
+  height: auto;     /* يحافظ على نسبة الطول للعرض */
+  display: block;   /* منع أي فراغات جانبية */
+}
 a {
   color: #6a11cb;
   text-decoration: none;
@@ -169,4 +174,11 @@ textarea.input {
 
 #comments-list strong {
   font-size: 14px;
+}
+
+@media (max-width: 500px) {
+  .header h2 { font-size: 18px; }
+  .btn { font-size: 14px; padding: 4px 8px; }
+  .post-body div { font-size: 14px; }
+  .comments-list div { font-size: 13px; }
 }

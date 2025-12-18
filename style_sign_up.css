@@ -54,3 +54,32 @@ body{
     border: 0;
     border-radius: 7px;
 }
+
+
+
+
+
+
+
+
+
+
+.btn-like {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 16px;
+}
+
+.heart {
+  font-size: 20px;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.liked .heart {
+  color: red;
+  transform: scale(1.3);
+}

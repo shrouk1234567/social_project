@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,14 +8,32 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="style_sign_up.css">
 </head>
+<style>/*
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f0f0f0; }
+  .container { max-width: 800px; margin:auto; padding:10px; }
+  .header { display:flex; justify-content:space-between; align-items:center; padding:10px; background:#6200ea; color:white; border-radius:5px; }
+  .header .brand { display:flex; align-items:center; gap:10px; }
+  .btn { padding:5px 10px; border:none; border-radius:5px; cursor:pointer; background:#03dac6; color:#000; }
+  .layout { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+  main.main { flex:2 1 500px; }
+  aside.sidebar { flex:1 1 200px; }
+  .card { background:white; padding:10px; border-radius:10px; margin-bottom:10px; }
+  .post-header { display:flex; gap:10px; align-items:center; }
+  .avatar { width:40px; height:40px; background:#bbb; border-radius:50%; }
+  .post-body img.media { max-width:100%; border-radius:5px; margin-top:5px; }*/
+  .btn-like { background:none; border:none; cursor:pointer; font-size:16px; display:flex; align-items:center; gap:5px; }
+  .btn-like.liked .heart { color:red; }
+  .comments-list div { border-top:1px solid #eee; padding:4px 0; font-size:14px; }
+  @media(max-width:600px){ .layout { flex-direction:column; } aside.sidebar { flex:none; }   }
+</style>
+</head>
 <body>
-  
-  
+
 <div class="container">
   <header class="header">
     <div class="brand">
       <div class="logo"> <img src="images/Container.png" width="40px"/></div>
-      <h2 style="color: rgb(248, 235, 249);">SocialVibe</h2>
+      <h2>SocialVibe</h2>
     </div>
     <div>
       <button class="btn" id="btn-create">New</button>
@@ -23,13 +42,11 @@
   </header>
 
   <div class="layout">
-    
-    <!---->
     <main class="main">
       <div class="card">
-        <textarea id="post-body" class="input" rows="3" placeholder="Write a post..."></textarea>
-        <input type="file" id="post-image" accept="image/*" style="background-color: rgb(255, 213, 245); border-radius: 10px;">
-        <div style="text-align:right;margin-top:8px;">
+        <textarea id="post-body" rows="3" placeholder="Write a post..." style="width:100%; border-radius:5px; padding:5px;"></textarea>
+        <input type="file" id="post-image" accept="image/*" style="margin-top:5px; width:100%;">
+        <div style="text-align:right; margin-top:5px;">
           <button class="btn" id="btn-post">Post</button>
         </div>
       </div>
@@ -39,7 +56,7 @@
     <aside class="sidebar">
       <div class="card">
         <h4>Profile</h4>
-        <div class="row">
+        <div class="row" style="display:flex; gap:10px; align-items:center;">
           <div class="avatar"></div>
           <div>
             <div id="profile-name">Guest</div>
@@ -48,12 +65,9 @@
         </div>
         <div style="margin-top:10px;"><a href="profile.html">View profile</a></div>
       </div>
-
-     
     </aside>
   </div>
 </div>
-
 
 <script>
 const API = "https://tarmeezacademy.com/api/v1";
@@ -62,101 +76,119 @@ const user = JSON.parse(localStorage.getItem("user") || "{}");
 document.getElementById("profile-name").innerText = user.name || "Guest";
 document.getElementById("profile-username").innerText = user.username ? "@"+user.username : "@guest";
 
-async function loadPosts(){
-  try {
-    const res = await fetch("https://tarmeezacademy.com/api/v1/posts?limit=10");
-    const postsData = await res.json();
-const posts = postsData.data;
-    const container = document.getElementById("posts-list");
-    container.innerHTML = "";
-    posts.forEach(p=>{
-  const div = document.createElement("div");
-  div.className = "card post";
-  div.innerHTML = `
-    <div class="row post-header">
-      <div class="avatar"></div>
-      <div>
-        <div><strong>${p.author ? p.author.name : "Unknown"}</strong></div>
- <div class="muted">
-  ${isNaN(Date.parse(p.created_at)) ? "" : new Date(p.created_at).toLocaleString()}
-</div>
+async function loadPosts() {
+    try {
+        const res = await fetch(`${API}/posts?limit=50`);
+        const postsData = await res.json();
+        const posts = postsData.data || [];
+        const container = document.getElementById("posts-list");
+        container.innerHTML = "";
 
-      </div>
-    </div>
+        for(let p of posts){
+            const div = document.createElement("div");
+            div.className = "card post";
+            div.innerHTML = `
+                <div class="row post-header">
+                    <div class="avatar"></div>
+                    <div>
+                        <div><strong>${p.author ? p.author.name : "Unknown"}</strong></div>
+                        <div class="muted">${isNaN(Date.parse(p.created_at)) ? "" : new Date(p.created_at).toLocaleString()}</div>
+                    </div>
+                </div>
 
-    <div class="post-body" style="margin-top:10px;">
-      <div>${p.body || ""}</div>
-      ${p.image ? `<img class="media" src="${p.image}" alt="image" />` : ""}
-      <div style="margin-top:8px;">
-        <a href="post.html?id=${p.id}">View</a>
-      </div>
-    </div>
-  `;
-  container.appendChild(div);
-});
+                <div class="post-body" style="margin-top:10px;">
+                    <div>${p.body || ""}</div>
+                    ${p.image ? `<img class="media" src="${p.image}" alt="image" />` : ""}
+                </div>
 
-  } catch(e){ console.error(e); }
+                <div style="margin-top:8px;">
+                  <button class="btn-like">
+                    <span class="heart">♡</span>
+                    <span class="count">${p.likes_count || 0}</span>
+                  </button>
+                  <a href="post.html?id=${p.id}">View</a>
+                </div>
+
+                <div class="comments-list" style="margin-top:10px;"></div>
+            `;
+
+            // Local Like button
+            const likeBtn = div.querySelector(".btn-like");
+            likeBtn.addEventListener("click", () => {
+                const countEl = likeBtn.querySelector(".count");
+                const heart = likeBtn.querySelector(".heart");
+                if(likeBtn.classList.contains("liked")){
+                    likeBtn.classList.remove("liked");
+                    heart.textContent = "♡";
+                    countEl.textContent = parseInt(countEl.textContent)-1;
+                } else {
+                    likeBtn.classList.add("liked");
+                    heart.textContent = "❤️";
+                    countEl.textContent = parseInt(countEl.textContent)+1;
+                }
+            });
+
+            container.appendChild(div);
+
+            // Comments
+            try {
+                const resComments = await fetch(`${API}/posts/${p.id}/comments`);
+                const commentsData = await resComments.json();
+                const comments = commentsData.data || [];
+                const commentsContainer = div.querySelector(".comments-list");
+                comments.forEach(c=>{
+                    const commentDiv = document.createElement("div");
+                    commentDiv.innerHTML = `<strong>${c.author ? c.author.name : "Anon"}</strong>: ${c.body}`;
+                    commentsContainer.appendChild(commentDiv);
+                });
+            } catch(e){ console.error(e); }
+        }
+
+    } catch (e) {
+        console.error(e);
+        alert("Failed to load posts");
+    }
 }
 
-
-
 // Post creation
-
 document.getElementById("btn-post").addEventListener("click", async ()=>{
   const body = document.getElementById("post-body").value.trim();
   const imageFile = document.getElementById("post-image").files[0] || null;
   if(!body && !imageFile) return alert("Post is empty.");
 
-  try {
+  try{
     const formData = new FormData();
     if(body) formData.append("body", body);
     if(imageFile) formData.append("image", imageFile);
 
-    const res = await fetch("https://tarmeezacademy.com/api/v1/posts", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${user.token}` // أهم تعديل
-      },
+    const res = await fetch(`${API}/posts`, {
+      method:"POST",
+      headers: {"Authorization": `Bearer ${user.token}`},
       body: formData
     });
 
     const data = await res.json();
     if(res.ok){
-      alert("Post created!");
       document.getElementById("post-body").value = "";
       document.getElementById("post-image").value = "";
       loadPosts();
     } else {
-      console.error(data);
-      alert("Failed to create post: " + (data.message || "Unknown error"));
+      alert("Failed to create post: "+(data.message||"Unknown"));
     }
-  } catch(e){
-    console.error(e);
-    alert("Failed to create post error");
-  }
+  } catch(e){ console.error(e); alert("Error creating post"); }
 });
 
-
-// Navigation buttons
+// Navigation
 document.getElementById("btn-create").addEventListener("click", ()=> window.location.href="create-post.html");
-document.getElementById("btn-logout").addEventListener("click", async ()=>{
-  try{
-    await fetch(`${API}/logout`, {
-      method:"POST",
-      headers:{ "Accept":"application/json", "Content-Type":"application/json" },
-      body: JSON.stringify({ username: user.username, password: user.password })
-    });
-  } catch(e){ console.error(e); }
+document.getElementById("btn-logout").addEventListener("click", ()=>{
   localStorage.removeItem("user");
   window.location.href="login.html";
 });
 
-
 // Initialize
 loadPosts();
-console.log(user.token);
-
 </script>
+
 </body>
 </html>
 
@@ -183,110 +215,3 @@ console.log(user.token);
 
 
 
-
-
-
-
-
-<!--<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Feed</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <header class="header">
-      <div class="brand"><div class="logo"></div><h1>Tarmeez Feed</h1></div>
-      <div>
-        <button class="btn" id="btn-create">New</button>
-        <button class="btn" id="btn-logout">Logout</button>
-      </div>
-    </header>
-
-    <div class="layout" >
-      <main class="main">
-        <div class="card">
-          <div class="form-row">
-            <textarea id="post-body" rows="3" class="input" placeholder="Write a post..."></textarea>
-            <input type="file" id="post-image" accept="image/*">
-            <div >
-              <button class="btn" id="btn-post">Post</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="posts-list"></div>
-      </main>
-
-      <aside class="sidebar" >
-        <div class="card">
-          <h4>Profile</h4>
-          <div class="row">
-            <div class="avatar"></div>
-            <div>
-              <div id="profile-name">Guest</div>
-              <div class="muted" id="profile-username">@guest</div>
-            </div>
-          </div>
-          <div style="margin-top:10px"><a href="profile.html">View profile</a></div>
-        </div>
-
-        <div class="card">
-          <h4>Tags</h4>
-          <div id="tags-list">Loading...</div>
-        </div>
-      </aside>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
-  <script>
-    async function renderPosts(){
-      try{
-        const posts = await api.getPosts(50);
-        const container = document.getElementById('posts-list');
-        container.innerHTML = '';
-        if (!Array.isArray(posts)) return container.innerText = 'No posts.';
-        posts.forEach(p => {
-          const div = document.createElement('div');
-          div.className = 'card post';
-          div.innerHTML = `
-            <div class="row post-header">
-              <div class="avatar"></div>
-              <div>
-                <div><strong>${p.author ? p.author.name : 'Unknown'}</strong></div>
-                <div class="muted">${new Date(p.createdAt || Date.now()).toLocaleString()}</div>
-              </div>
-            </div>
-            <div class="post-body">
-              <div>${p.body || ''}</div>
-              ${p.image ? `<img class="media" src="${p.image}" alt="image">` : ''}
-              <div style="margin-top:8px"><a href="post.html?id=${p.id}">View</a></div>
-            </div>
-          `;
-          container.appendChild(div);
-        });
-      }catch(e){ console.error(e); alert('Failed to load posts'); }
-    }
-
-    async function renderTags(){
-      try{ const tags = await api.getTags(); document.getElementById('tags-list').innerText = (Array.isArray(tags) ? tags.map(t=>`#${t.name}`).join(' ') : 'No tags'); }catch(e){ document.getElementById('tags-list').innerText='Failed'; }
-    }
-
-    document.getElementById('btn-post').addEventListener('click', async ()=>{
-      const body = document.getElementById('post-body').value.trim();
-      const image = document.getElementById('post-image').files[0] || null;
-      try{ await api.createPost({ body, imageFile: image }); document.getElementById('post-body').value = ''; document.getElementById('post-image').value = ''; await renderPosts(); }catch(e){ console.error(e); alert('Create post failed'); }
-    });
-
-    document.getElementById('btn-create').addEventListener('click', ()=>{ window.location.href='create-post.html'; });
-    document.getElementById('btn-logout').addEventListener('click', ()=>{ api.logout(); });
-
-    // init
-    renderPosts(); renderTags();
-  </script>
-</body>
-</html>-->
