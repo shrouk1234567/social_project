@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profile</title>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="images/Container.png">
 </head>
 <body>
 <div class="container" style="max-width:720px;margin-top:20px;">
@@ -40,7 +41,7 @@ document.getElementById("btn-update-profile").addEventListener("click", async ()
   if(!user || !user.token) return alert("You must login first!");
 
   try {
-    const res = await fetch(`${API}/updateProfile`, {
+    const res = await fetch(`${API}/updatePorfile`, {
       method:"PUT",
       headers:{
         "Accept":"application/json",
@@ -51,10 +52,14 @@ document.getElementById("btn-update-profile").addEventListener("click", async ()
     });
 
     const data = await res.json();
+if(res.ok){
+      
+      const updatedUser = {
+        ...user,
+        ...data.data.user
+      };
 
-    if(res.ok){
-      // update local storage
-      localStorage.setItem("user", JSON.stringify(data.data.user));
+      localStorage.setItem("user", JSON.stringify(updatedUser));
       alert("Profile updated!");
     } else {
       alert(data.message || "Update failed");

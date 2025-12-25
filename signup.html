@@ -6,9 +6,10 @@
 <title>Sign Up</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="style_sign_up.css">
+<link rel="icon" type="image/png" href="images/Container.png">
 </head>
 <body>
-   <div style="display: flex; justify-content: space-between;align-items: center; margin: 10px;">
+   <div style="display: flex; justify-content: space-between;align-items: center; margin: 5px;">
     <div style="display: flex; align-content: center;align-items: center; gap: 5px;">
        <img src="images/Container.png" width="30px"/>
       <h2 style="color: rgb(248, 235, 249);">SocialVibe</h2>
@@ -66,6 +67,7 @@ document.getElementById("btn-signup").addEventListener("click", async () => {
   }
 
   try {
+    //object formData *headers لانه بيحددهاcontent type
     const formData = new FormData();
     formData.append("username", username);
     formData.append("name", name);

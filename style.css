@@ -43,13 +43,7 @@ a {
   margin-bottom: 20px;
   box-shadow: 0 4px 10px rgb(49, 0, 47);
 }
-#posts-list div:hover{
- 
-  transform: translateY(-8px) scale(1.02);
- 
-
-}
-h1, h2, h3, h4 {
+h2, h3, h4 {
   margin-bottom: 10px;
 }
 
